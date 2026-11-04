@@ -144,7 +144,8 @@ class SafetyGate:
         if local.weekday() >= 5 or not in_session:
             errors.append('session')  # 节假日仍由服务端判定；此处不伪造交易日历。
         frozen = portfolio.account.get('openFrozen')
-        if frozen is None:
+        # 官方账户接口：显式 null 与 false 均表示未冻结；缺字段仍不能确认状态。
+        if 'openFrozen' not in portfolio.account:
             errors.append('open_frozen_unknown')
         if (local.hour, local.minute) >= OPEN_CUTOFF or frozen:
             if type(qty) is not int or qty > portfolio.reducible_qty(intent.product_id, intent.side):

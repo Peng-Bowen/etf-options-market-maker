@@ -99,6 +99,12 @@ class GateTests(unittest.TestCase):
         self.state.account['openFrozen'] = True
         self.assertIn('opening_forbidden', self.check(qty=1))
 
+    def test_explicit_null_open_frozen_means_unfrozen_per_api(self):
+        self.state.account['openFrozen'] = None
+        self.assertEqual(self.check(qty=1), [])
+        del self.state.account['openFrozen']
+        self.assertIn('open_frozen_unknown', self.check(qty=1))
+
     def test_whitelist_checks_refdata_not_symbol_appearance(self):
         self.gate.products['100001.SH'] = product(underlying='000300.SH')
         with self.assertRaises(ValueError):
